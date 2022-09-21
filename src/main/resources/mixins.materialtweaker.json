@@ -1,0 +1,20 @@
+{
+  "package": "materialtweaker.mixin",
+  "refmap": "refmap.materialtweaker.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "EnumHelperMixin",
+    "ItemArmorArmorMaterialMixin",
+    "ItemArmorMixin",
+    "ItemElytraMixin",
+    "ItemMixin",
+    "ItemShieldMixin",
+    "ItemSwordMixin",
+    "ItemToolMaterialMixin",
+    "ItemToolMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.6"
+}

@@ -1,0 +1,16 @@
+[
+{
+  "modid": "materialtweaker",
+  "name": "MaterialTweaker",
+  "description": "Allows for editing material attributes.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://www.curseforge.com/members/fonnymunkey/projects",
+  "updateUrl": "",
+  "authorList": ["fonnymunkey"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
