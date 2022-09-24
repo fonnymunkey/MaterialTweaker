@@ -1,7 +1,9 @@
 package materialtweaker.mixin;
 
-import materialtweaker.handlers.ConfigHandler;
+import materialtweaker.core.MaterialTweaker;
+import materialtweaker.handlers.ForgeConfigHandler;
 import net.minecraftforge.common.util.EnumHelper;
+import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -14,11 +16,11 @@ public abstract class EnumHelperMixin {
 	private static void materialtweaker_addToolMaterial(Args args) {
 		//Args (Class enum, String name, Object[] properties)
 		//Object[] properties (int harvestLevel, int maxUses, float efficiency, float damage, int enchantability)
-		if(ConfigHandler.server.printInfo) {
+		if(ForgeConfigHandler.server.printInfo) {
 			try {
 				String name = args.get(1);
 				Object[] properties = args.get(2);
-				System.out.println("Tool Material Registering," +
+				MaterialTweaker.LOGGER.log(Level.INFO, MaterialTweaker.MODID + ": " + "Tool Material Registering," +
 						" Name: " + name +
 						" HarvestLevel: " + properties[0] +
 						" MaxUses: " + properties[1] +
@@ -27,7 +29,7 @@ public abstract class EnumHelperMixin {
 						" Enchantability: " + properties[4]);
 			}
 			catch(Exception ex) {
-				System.out.println("Tool Material Attribute printing failed: " + ex);
+				MaterialTweaker.LOGGER.log(Level.ERROR, MaterialTweaker.MODID + ": " + "Tool Material Attribute printing failed: " + ex);
 			}
 		}
 	}
@@ -36,11 +38,11 @@ public abstract class EnumHelperMixin {
 	private static void materialtweaker_addArmorMaterial(Args args) {
 		//Args (Class enum, String name, Object[] properties)
 		//Object[] properties (String textureName, int durabilityFactor, int[4] reductionAmounts, int enchantability, SoundEvent soundEquip, float toughness)
-		if(ConfigHandler.server.printInfo) {
+		if(ForgeConfigHandler.server.printInfo) {
 			try {
 				String name = args.get(1);
 				Object[] properties = args.get(2);
-				System.out.println("Armor Material Registering," +
+				MaterialTweaker.LOGGER.log(Level.INFO, MaterialTweaker.MODID + ": " + "Armor Material Registering," +
 						" Name: " + name +
 						" DurabilityFactor: " + properties[1] +
 						" ReductionAmounts: " + ((int[])(properties[2]))[0] + " " + ((int[])(properties[2]))[1] + " " + ((int[])(properties[2]))[2] + " " + ((int[])(properties[2]))[3] +
@@ -48,7 +50,7 @@ public abstract class EnumHelperMixin {
 						" Toughness: " + properties[5]);
 			}
 			catch(Exception ex) {
-				System.out.println("Tool Material Attribute printing failed: " + ex);
+				MaterialTweaker.LOGGER.log(Level.ERROR, MaterialTweaker.MODID + ": " + "Armor Material Attribute printing failed: " + ex);
 			}
 		}
 	}
