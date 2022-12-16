@@ -22,56 +22,75 @@ public abstract class ItemToolMaterialMixin {
     private int enchantabilityReplace;
 
     private boolean checkedAttributes = false;
-    private boolean checkedRepairs= false;
+    private boolean checkedRepairs = false;
     private boolean replacedAttributes = false;
     private boolean replacedRepair = false;
 
-    @Inject(at = @At(value = "HEAD"), method = "getMaxUses", cancellable = true)
-    private void materialtweaker_tool_getMaxUses(CallbackInfoReturnable<Integer> cir) {
-        //System.out.println("Checking tool getMaxUses: " + ((Item.ToolMaterial)(Object)this).name());
+
+    @Inject(
+            method = "getMaxUses",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_tool_getMaxUses(CallbackInfoReturnable<Integer> cir) {
         if(!this.checkedAttributes) this.checkAttributesTool();
         if(this.replacedAttributes) cir.setReturnValue(this.maxUsesReplace);
     }
-    @Inject(at = @At(value = "HEAD"), method = "getEfficiency", cancellable = true)
-    private void materialtweaker_tool_getEfficiency(CallbackInfoReturnable<Float> cir) {
-        //System.out.println("Checking tool getEfficiency: " + ((Item.ToolMaterial)(Object)this).name());
+    @Inject(
+            method = "getEfficiency",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_tool_getEfficiency(CallbackInfoReturnable<Float> cir) {
         if(!this.checkedAttributes) this.checkAttributesTool();
         if(this.replacedAttributes) cir.setReturnValue(this.efficiencyReplace);
     }
-    @Inject(at = @At(value = "HEAD"), method = "getAttackDamage", cancellable = true)
-    private void materialtweaker_tool_getAttackDamage(CallbackInfoReturnable<Float> cir) {
-        //System.out.println("Checking tool getAttackDamage: " + ((Item.ToolMaterial)(Object)this).name());
+    @Inject(
+            method = "getAttackDamage",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_tool_getAttackDamage(CallbackInfoReturnable<Float> cir) {
         if(!this.checkedAttributes) this.checkAttributesTool();
         if(this.replacedAttributes) cir.setReturnValue(this.attackDamageReplace);
     }
-    @Inject(at = @At(value = "HEAD"), method = "getHarvestLevel", cancellable = true)
-    private void materialtweaker_tool_getHarvestLevel(CallbackInfoReturnable<Integer> cir) {
-        //System.out.println("Checking tool getHarvestLevel: " + ((Item.ToolMaterial)(Object)this).name());
+    @Inject(
+            method = "getHarvestLevel",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_tool_getHarvestLevel(CallbackInfoReturnable<Integer> cir) {
         if(!this.checkedAttributes) this.checkAttributesTool();
         if(this.replacedAttributes) cir.setReturnValue(this.harvestLevelReplace);
     }
-    @Inject(at = @At(value = "HEAD"), method = "getEnchantability", cancellable = true)
-    private void materialtweaker_tool_getEnchantability(CallbackInfoReturnable<Integer> cir) {
-        //System.out.println("Checking tool getEnchantability: " + ((Item.ToolMaterial)(Object)this).name());
+    @Inject(
+            method = "getEnchantability",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_tool_getEnchantability(CallbackInfoReturnable<Integer> cir) {
         if(!this.checkedAttributes) this.checkAttributesTool();
         if(this.replacedAttributes) cir.setReturnValue(this.enchantabilityReplace);
     }
 
-    @Inject(at = @At(value = "HEAD"), method = "getRepairItem", cancellable = true)
-    private void materialtweaker_tool_getRepairItem(CallbackInfoReturnable<Item> cir) {
-        //System.out.println("Checking tool getRepairItem: " + ((Item.ToolMaterial)(Object)this).name());
+    @Inject(
+            method = "getRepairItem",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_tool_getRepairItem(CallbackInfoReturnable<Item> cir) {
         if(!this.checkedRepairs) this.checkRepairsTool();
         if(this.replacedRepair) cir.setReturnValue(this.repairMaterial.getItem());
     }
-    @Inject(at = @At(value = "HEAD"), method = "getRepairItemStack", remap = false, cancellable = true)
-    private void materialtweaker_tool_getRepairItemStack(CallbackInfoReturnable<ItemStack> cir) {
-        //System.out.println("Checking tool getRepairItemStack: " + ((Item.ToolMaterial)(Object)this).name());
+    @Inject(
+            method = "getRepairItemStack",
+            at = @At(value = "HEAD"),
+            cancellable = true,
+            remap = false)
+    public void materialtweaker_tool_getRepairItemStack(CallbackInfoReturnable<ItemStack> cir) {
         if(!this.checkedRepairs) this.checkRepairsTool();
         if(this.replacedRepair) cir.setReturnValue(this.repairMaterial);
     }
-    @Inject(at = @At(value = "HEAD"), method = "setRepairItem", remap = false, cancellable = true)
-    private void materialtweaker_tool_setRepairItem(CallbackInfoReturnable<Item.ToolMaterial> cir) {
-        //System.out.println("Checking tool setRepairItem: " + ((Item.ToolMaterial)(Object)this).name());
+    @Inject(
+            method = "setRepairItem",
+            at = @At(value = "HEAD"),
+            cancellable = true,
+            remap = false)
+    public void materialtweaker_tool_setRepairItem(CallbackInfoReturnable<Item.ToolMaterial> cir) {
         if(!this.checkedRepairs) this.checkRepairsTool();
         if(this.replacedRepair) cir.setReturnValue((Item.ToolMaterial)(Object)this);
     }
@@ -80,8 +99,6 @@ public abstract class ItemToolMaterialMixin {
         this.checkedAttributes = true;
         try {
             ToolAttributeEntry attributeEntry = CustomConfigHandler.getToolAttributes(((Item.ToolMaterial)(Object)this).name());
-
-            //System.out.println("Checking tool material attributes: " + ((Item.ToolMaterial)(Object)this).name());
 
             if(attributeEntry!=null) {
                 this.harvestLevelReplace = attributeEntry.harvestLevel;
@@ -101,8 +118,6 @@ public abstract class ItemToolMaterialMixin {
         this.checkedRepairs = true;
         try {
             String[] repairEntry = CustomConfigHandler.getToolRepairs(((Item.ToolMaterial)(Object)this).name());
-
-            //System.out.println("Checking tool material repairs: " + ((Item.ToolMaterial)(Object)this).name());
 
             if(repairEntry!=null) {
                 this.repairMaterial = new ItemStack(Item.getByNameOrId(repairEntry[0]), 1, repairEntry[1].equals("*") ? net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE : Integer.parseInt(repairEntry[1]));

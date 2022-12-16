@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemArmor.ArmorMaterial.class)
-public class ItemArmorArmorMaterialMixin {
+public abstract class ItemArmorArmorMaterialMixin {
 
     @Shadow @Final private int maxDamageFactor;
 
@@ -32,47 +32,64 @@ public class ItemArmorArmorMaterialMixin {
     private boolean replacedAttributes = false;
     private boolean replacedRepair = false;
 
+
     //Durability = max_damage_array[armorindex] * maxdamagefactor
-    @Inject(at = @At(value = "RETURN"), method = "getDurability", cancellable = true)
-    private void materialtweaker_armor_getDurability(EntityEquipmentSlot armorType, CallbackInfoReturnable<Integer> cir) {
-        //System.out.println("Checking armor getDurability: " + ((ItemArmor.ArmorMaterial)(Object)this).name());
+    @Inject(
+            method = "getDurability",
+            at = @At(value = "RETURN"),
+            cancellable = true)
+    public void materialtweaker_armor_getDurability(EntityEquipmentSlot armorType, CallbackInfoReturnable<Integer> cir) {
         if(!this.checkedAttributes) this.checkAttributesArmor();
         if(this.replacedAttributes) cir.setReturnValue((cir.getReturnValueI()/this.maxDamageFactor)*this.maxDamageFactorReplace);
     }
-    @Inject(at = @At(value = "HEAD"), method = "getDamageReductionAmount", cancellable = true)
-    private void materialtweaker_armor_getDamageReductionAmount(EntityEquipmentSlot armorType, CallbackInfoReturnable<Integer> cir) {
-        //System.out.println("Checking armor getDamageReductionAmount: " + ((ItemArmor.ArmorMaterial)(Object)this).name());
+    @Inject(
+            method = "getDamageReductionAmount",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_armor_getDamageReductionAmount(EntityEquipmentSlot armorType, CallbackInfoReturnable<Integer> cir) {
         if(!this.checkedAttributes) this.checkAttributesArmor();
         if(this.replacedAttributes) cir.setReturnValue(this.damageReductionAmountReplace[armorType.getIndex()]);
     }
-    @Inject(at = @At(value = "HEAD"), method = "getEnchantability", cancellable = true)
-    private void materialtweaker_armor_getEnchantability(CallbackInfoReturnable<Integer> cir) {
-        //System.out.println("Checking armor getEnchantability: " + ((ItemArmor.ArmorMaterial)(Object)this).name());
+    @Inject(
+            method = "getEnchantability",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_armor_getEnchantability(CallbackInfoReturnable<Integer> cir) {
         if(!this.checkedAttributes) this.checkAttributesArmor();
         if(this.replacedAttributes) cir.setReturnValue(this.enchantabilityReplace);
     }
-    @Inject(at = @At(value = "HEAD"), method = "getToughness", cancellable = true)
-    private void materialtweaker_armor_getToughness(CallbackInfoReturnable<Float> cir) {
-        //System.out.println("Checking armor getToughness: " + ((ItemArmor.ArmorMaterial)(Object)this).name());
+    @Inject(
+            method = "getToughness",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_armor_getToughness(CallbackInfoReturnable<Float> cir) {
         if(!this.checkedAttributes) this.checkAttributesArmor();
         if(this.replacedAttributes) cir.setReturnValue(this.toughnessReplace);
     }
 
-    @Inject(at = @At(value = "HEAD"), method = "getRepairItem", cancellable = true)
-    private void materialtweaker_armor_getRepairItem(CallbackInfoReturnable<Item> cir) {
-        //System.out.println("Checking armor getRepairItem: " + ((ItemArmor.ArmorMaterial)(Object)this).name());
+    @Inject(
+            method = "getRepairItem",
+            at = @At(value = "HEAD"),
+            cancellable = true)
+    public void materialtweaker_armor_getRepairItem(CallbackInfoReturnable<Item> cir) {
         if(!this.checkedRepair) this.checkRepairsArmor();
         if(this.replacedRepair) cir.setReturnValue(this.repairMaterial.getItem());
     }
-    @Inject(at = @At(value = "HEAD"), method = "getRepairItemStack", remap = false, cancellable = true)
-    private void materialtweaker_armor_getRepairItemStack(CallbackInfoReturnable<ItemStack> cir) {
-        //System.out.println("Checking armor getRepairItemStack: " + ((ItemArmor.ArmorMaterial)(Object)this).name());
+    @Inject(
+            method = "getRepairItemStack",
+            at = @At(value = "HEAD"),
+            cancellable = true,
+            remap = false)
+    public void materialtweaker_armor_getRepairItemStack(CallbackInfoReturnable<ItemStack> cir) {
         if(!this.checkedRepair) this.checkRepairsArmor();
         if(this.replacedRepair) cir.setReturnValue(this.repairMaterial);
     }
-    @Inject(at = @At(value = "HEAD"), method = "setRepairItem", remap = false, cancellable = true)
-    private void materialtweaker_armor_setRepairItem(CallbackInfoReturnable<ItemArmor.ArmorMaterial> cir) {
-        //System.out.println("Checking armor setRepairItem: " + ((ItemArmor.ArmorMaterial)(Object)this).name());
+    @Inject(
+            method = "setRepairItem",
+            at = @At(value = "HEAD"),
+            cancellable = true,
+            remap = false)
+    public void materialtweaker_armor_setRepairItem(CallbackInfoReturnable<ItemArmor.ArmorMaterial> cir) {
         if(!this.checkedRepair) this.checkRepairsArmor();
         if(this.replacedRepair) cir.setReturnValue((ItemArmor.ArmorMaterial)(Object)this);
     }
@@ -81,8 +98,6 @@ public class ItemArmorArmorMaterialMixin {
         this.checkedAttributes = true;
         try {
             ArmorAttributeEntry attributeEntry = CustomConfigHandler.getArmorAttributes(((ItemArmor.ArmorMaterial)(Object)this).name());
-
-            //System.out.println("Checking armor material attributes: " + ((ItemArmor.ArmorMaterial)(Object)this).name());
 
             if(attributeEntry!=null) {
                 this.maxDamageFactorReplace = attributeEntry.durabilityFactor;
@@ -101,8 +116,6 @@ public class ItemArmorArmorMaterialMixin {
         this.checkedRepair = true;
         try {
             String[] repairEntry = CustomConfigHandler.getArmorRepairs(((ItemArmor.ArmorMaterial)(Object)this).name());
-
-            //System.out.println("Checking armor material repairs: " + ((ItemArmor.ArmorMaterial)(Object)this).name());
 
             if(repairEntry!=null) {
                 this.repairMaterial = new ItemStack(Item.getByNameOrId(repairEntry[0]), 1, repairEntry[1].equals("*") ? net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE : Integer.parseInt(repairEntry[1]));

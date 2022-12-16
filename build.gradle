@@ -1,78 +1,108 @@
 buildscript {
     repositories {
-        maven { url = 'https://maven.minecraftforge.net/' }
-        maven { url = 'https://repo.spongepowered.org/maven' }
-		mavenCentral()
+        maven {
+            url = 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            url = 'https://repo.spongepowered.org/maven'
+        }
+	mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-version = "1.1.0"
-group = "materialtweaker" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "MaterialTweaker"
+version = "${mod_version}"
+group = "${mod_id}"
+archivesBaseName = "${mod_name}"
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 minecraft {
     mappings channel: mappings_channel, version: mappings_version
+
+    runs {
+        client {
+            args "--username=InDev"
+
+            jvmArg "-Dfml.coreMods.load=${mixin_loader_class}"
+            jvmArg "-Dmixin.hotSwap=true"
+            jvmArg "-Dmixin.checks.interfaces=true"
+
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+        }
+
+        server {
+
+            jvmArg "-Dfml.coreMods.load=${mixin_loader_class}"
+            jvmArg "-Dmixin.hotSwap=true"
+            jvmArg "-Dmixin.checks.interfaces=true"
+
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
 }
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven { url = 'https://repo.spongepowered.org/maven' }
-}
-
-configurations {
-    embed
-    compile.extendsFrom(embed)
+    maven {
+        url = "https://www.cursemaven.com"
+    }
+    maven {
+        url = 'https://repo.spongepowered.org/maven'
+    }
+    flatDir {
+        dirs 'libs\\'
+    }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-	embed('org.spongepowered:mixin:0.8.3-SNAPSHOT') {
-        exclude module: 'guava'
-        exclude module: 'commons-io'
-        exclude module: 'gson'
-    }
+
+    implementation "org.spongepowered:mixin:0.8.5"
+    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+}
+
+mixin {
+    add sourceSets.main, "mixins.${mod_id}.refmap.json"
 }
 
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", minecraft_version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
+    filesMatching('mcmod.info') {
         expand 'mod_id': mod_id, 'mod_name': mod_name, 'version': project.version,
                 'mcversion': minecraft_version, 'mod_description': mod_description,
                 'mod_author': mod_author
     }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-}
-
-mixin {
-    add sourceSets.main, mod_mixin_refmap.replace('${mod_id}', mod_id)
 }
 
 jar {
-    from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
-        exclude 'LICENSE.txt', 'META-INF/MANIFSET.MF', 'META-INF/maven/**', 'META-INF/*.RSA', 'META-INF/*.SF'
+    manifest {
+        attributes([
+                "Specification-Title"     : mod_name,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : mod_name,
+                "Implementation-Version"  : mod_version,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "FMLCorePlugin": "${mixin_loader_class}",
+                "FMLCorePluginContainsFMLMod": "true",
+                "ForceLoadAsMod": "true", //Seems to do the opposite of what it claims to do while in dev enviroment, uncomment for build
+                "TweakClass": "org.spongepowered.asm.launch.MixinTweaker"
+        ])
     }
-
-    manifest.attributes(
-            'FMLCorePluginContainsFMLMod': true,
-            'ForceLoadAsMod': true,
-            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-            'TweakOrder': 0,
-            'MixinConfigs': 'mixins.materialtweaker.json',
-            'FMLCorePlugin': 'materialtweaker.mixin.MixinLoader'
-    )
 }
+
+jar.finalizedBy('reobfJar')

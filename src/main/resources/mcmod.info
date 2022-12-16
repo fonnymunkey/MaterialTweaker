@@ -1,16 +1,15 @@
 [
 {
-  "modid": "materialtweaker",
-  "name": "MaterialTweaker",
-  "description": "Allows for editing tool and armor material attributes and repair items.",
+  "modid": "${mod_id}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "https://www.curseforge.com/members/fonnymunkey/projects",
   "updateUrl": "",
-  "authorList": ["fonnymunkey"],
+  "authorList": ${mod_author},
   "credits": "",
   "logoFile": "logo.png",
-  "screenshots": [],
   "dependencies": []
 }
 ]
